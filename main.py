@@ -108,7 +108,8 @@ def transaction_capsule(date, schedule_df):
         execute_sql = "SELECT DISTINCT dev FROM bus_data WHERE time = %(date)s"
         conn = psycopg2.connect(**db_params)
         cur = conn.cursor()
-        cur.execute(execute_sql, (date,))
+        param = {'date': date}
+        cur.execute(execute_sql, param)
         dev_list = cur.fetchall()
         process_date(date, schedule_df, dev_list, cur)
         conn.commit()
