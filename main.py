@@ -104,6 +104,7 @@ def insert_delay_data(cur, date, dev, delay, delay_cutoff_1min, delay_cutoff_2mi
     #conn.commit()
     
 def transaction_capsule(date, schedule_df):
+    print(f"Processing date: {date}")
     try:
         execute_sql = "SELECT DISTINCT dev FROM bus_data WHERE time = %(date)s"
         conn = psycopg2.connect(**db_params)
@@ -208,6 +209,7 @@ if __name__ == '__main__':
     schedule_df = read_data('gtfs/stop_times.txt')
     schedule_df['arrival_time'] = schedule_df['arrival_time'].apply(custom_to_datetime).dt.time
     transaction_capsule('2023-11-01', schedule_df)
+    print("Done")
 
 
 
