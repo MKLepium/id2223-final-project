@@ -167,6 +167,10 @@ def process_date(date, schedule_df, dev_list, cur):
 
         # 4. find the closest scheduled time for each stop change
 
+        logging.debug(f"Processing stop changes")
+        logging.debug(f"Stop change df: {stop_change_df.head()}")
+        logging.debug(f"Stop change length: {len(stop_change_df)}")
+
         for index, row in stop_change_df.iterrows():
             logging.debug(f"Processing stop change row: {row}")
             matching_schedule_rows = schedule_df[schedule_df['stop_id'] == row['stop']]
@@ -224,11 +228,13 @@ def process_date(date, schedule_df, dev_list, cur):
         logging.info(f"Bus {dev} has a total delay of: {stop_change_df['delay_cutoff_5min'].sum()} minutes with a cutoff of 5 minutes")
 
         # 5.4 insert the data into the database
-        insert_delay_data(cur, date, dev, 
-                          stop_change_df['delay_no_cutoff'].sum(), 
-                          stop_change_df['delay_cutoff_1min'].sum(), 
-                          stop_change_df['delay_cutoff_2min'].sum(), 
-                          stop_change_df['delay_cutoff_5min'].sum())
+        pass
+        """insert_delay_data(cur, date, dev, 
+                            int(stop_change_df['delay_no_cutoff'].sum()), 
+                            int(stop_change_df['delay_cutoff_1min'].sum()),
+                            int(stop_change_df['delay_cutoff_2min'].sum()),
+                            int(stop_change_df['delay_cutoff_5min'].sum()))"""
+        
 
 
 
@@ -237,6 +243,9 @@ def process_date(date, schedule_df, dev_list, cur):
 if __name__ == '__main__':
     # read the schedule data
     schedule_df = read_data('gtfs/stop_times.txt')
+    logging.debug(f"Schedule df: {schedule_df.head()}")
+    logging.debug(f"Schedule df info: {schedule_df.info()}")
+    logging.debug(f"Schedule df length: {len(schedule_df)}")
     schedule_df['arrival_time'] = schedule_df['arrival_time'].apply(custom_to_datetime).dt.time
     transaction_capsule('2023-11-01', schedule_df)
     print("Done")
