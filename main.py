@@ -137,6 +137,7 @@ def transaction_capsule(date, schedule_df):
 
         
 def process_date(date, schedule_df, dev_list, cur):
+    logging.debug(f"dev_list: {dev_list}")
 
     for dev in dev_list:
         logging.debug(f"Processing dev: {dev}")
@@ -148,7 +149,6 @@ def process_date(date, schedule_df, dev_list, cur):
 
         # 1. identify rows where the stop changes
         bus_data_df['stop_change'] = bus_data_df['stop'] != bus_data_df['stop'].shift(1)
-        logging.debug(f"Found {bus_data_df['stop_change'].sum()} stop changes")
 
         # 2. stop_change_df contains the timestamps and other data when the bus arrived at a new stop
         stop_change_df = bus_data_df[bus_data_df['stop_change'] & bus_data_df['stop'].notna()].copy()
