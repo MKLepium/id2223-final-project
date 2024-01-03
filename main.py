@@ -238,12 +238,11 @@ def process_date(date, schedule_df, dev_list, cur):
         logging.info(f"Bus {dev} has a total delay of: {stop_change_df['delay_cutoff_5min'].sum()} minutes with a cutoff of 5 minutes")
 
         # 5.4 insert the data into the database
-        break
-        """insert_delay_data(cur, date, dev, 
+        insert_delay_data(cur, date, dev, 
                             int(stop_change_df['delay_no_cutoff'].sum()), 
                             int(stop_change_df['delay_cutoff_1min'].sum()),
                             int(stop_change_df['delay_cutoff_2min'].sum()),
-                            int(stop_change_df['delay_cutoff_5min'].sum()))"""
+                            int(stop_change_df['delay_cutoff_5min'].sum()))
         
 
 
