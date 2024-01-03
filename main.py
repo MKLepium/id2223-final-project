@@ -176,7 +176,10 @@ def process_date(date, schedule_df, dev_list, cur):
             
             # cast the schedule_df['stop_id'] to int
             schedule_df['stop_id'] = schedule_df['stop_id'].astype(int)
-            row['stop'] = int(row['stop'])
+            # cast the row['stop'] to int if it is not an int
+            if not isinstance(row['stop'], int):
+                row['stop'] = int(row['stop'])
+            
             logging.debug(f"schedule_df['stop_id'].dtype, {schedule_df['stop_id'].dtype}")
             logging.debug(f"row['stop'], {type(row['stop'])}")
             matching_schedule_rows = schedule_df[schedule_df['stop_id'] == row['stop']]
