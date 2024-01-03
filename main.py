@@ -173,6 +173,8 @@ def process_date(date, schedule_df, dev_list, cur):
 
         for index, row in stop_change_df.iterrows():
             logging.debug(f"Processing stop change row: {row}")
+            logging.debug(f"schedule_df['stop_id'].dtype")
+            logging.debug(f"row['stop'].dtype")
             matching_schedule_rows = schedule_df[int(schedule_df['stop_id']) == int(row['stop'])]
             logging.debug(f"Found {len(matching_schedule_rows)} matching schedule rows")
 
