@@ -106,12 +106,14 @@ def insert_delay_data(cur, date, dev, delay, delay_cutoff_1min, delay_cutoff_2mi
 def transaction_capsule(date, schedule_df):
     print(f"Processing date: {date}")
     try:
-        execute_sql = "SELECT DISTINCT dev FROM bus_data WHERE time = %(date)s"
+        # SELECT * FROM bus_data WHERE DATE(time) = '2023-11-01';
+        execute_sql = "SELECT DISTINCT dev FROM bus_data WHERE DATE(time) = %(date)s"
         conn = psycopg2.connect(**db_params)
         cur = conn.cursor()
         param = {'date': date}
         cur.execute(execute_sql, param)
         dev_list = cur.fetchall()
+        print(f"Found {len(dev_list)} devices")
         process_date(date, schedule_df, dev_list, cur)
         conn.commit()
     except Exception as e:  # Catching all exceptions
