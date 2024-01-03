@@ -5,7 +5,7 @@ import pandas as pd
 import psycopg2
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 def read_data(file):
@@ -99,7 +99,15 @@ Column |            Type             | Collation | Nullable | Default
 
 def insert_delay_data(cur, date, dev, delay, delay_cutoff_1min, delay_cutoff_2min, delay_cutoff_5min):
     logging.debug(f"Inserting data for date: {date} and dev: {dev}")
-    sql = "INSERT INTO bus_data_schema.delay_max_test VALUES (%(date)s, %(dev)s, %(delay)s, %(delay_cutoff_1min)s, %(delay_cutoff_2min)s, %(delay_cutoff_5min)s)"
+    # only insert if the data does not exist
+
+    sql = """
+    INSERT INTO bus_data_schema.delay_max_test 
+    VALUES (%(date)s, %(dev)s, %(delay)s, %(delay_cutoff_1min)s, %(delay_cutoff_2min)s, %(delay_cutoff_5min)s)
+    ON CONFLICT (date, dev) 
+    DO NOTHING
+    """
+
     params = {
         'date': date, 
         'dev': dev, 
@@ -257,8 +265,23 @@ if __name__ == '__main__':
     logging.debug(f"Schedule df info: {schedule_df.info()}")
     logging.debug(f"Schedule df length: {len(schedule_df)}")
     schedule_df['arrival_time'] = schedule_df['arrival_time'].apply(custom_to_datetime).dt.time
-    transaction_capsule('2023-11-01', schedule_df)
-    print("Done")
+
+    months = ['2023-10', '2023-11', '2023-12']
+    for month in months:
+        for day in range(1, 32):
+            # skip the dates that do not exist
+            if month == '2023-10' and day > 31:
+                continue
+            elif month == '2023-11' and day > 30:
+                continue
+            elif month == '2023-12' and day > 31:
+                continue
+            
+            date = f"{month}-{day:02d}"
+            logging.info(f"Processing date: {date}")
+            transaction_capsule(date, schedule_df)
+            print("Done")
+
 
 
 
