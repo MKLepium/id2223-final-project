@@ -57,10 +57,11 @@ db_params = {
 }
 
 def get_bus_data(cur, date, dev):
-    sql = "SELECT * FROM bus_data WHERE time = %(date)s AND dev = %(dev)s"
+    sql = "SELECT * FROM bus_data WHERE DATE(time) = %(date)s AND dev = %(dev)s"
     # call the postgresql database and get the data
     # return the data as a pandas dataframe
-    cur.execute(sql, (date, dev))
+    param = {'date': date, 'dev': dev}
+    cur.execute(sql, param)
     rows = cur.fetchall()
     #print(rows)
     #print(len(rows))
