@@ -182,12 +182,19 @@ def process_date(date, schedule_df, dev_list, cur):
         # 5.2 create a new row for delay_no_cutoff, delay_cutoff_1min, delay_cutoff_2min, delay_cutoff_5min
         # 5.2.1 delay_no_cutoff
         stop_change_df['delay_no_cutoff'] = stop_change_df['delay'].abs()
+
         # 5.2.2 delay_cutoff_1min
-        stop_change_df['delay_cutoff_1min'] = stop_change_df[stop_change_df['delay'].abs() > 1]
+        # Assign 1 if absolute delay is greater than 1, else 0
+        stop_change_df['delay_cutoff_1min'] = stop_change_df['delay'].abs() > 1
+
         # 5.2.3 delay_cutoff_2min
-        stop_change_df['delay_cutoff_2min'] = stop_change_df[stop_change_df['delay'].abs() > 2]
+        # Assign 1 if absolute delay is greater than 2, else 0
+        stop_change_df['delay_cutoff_2min'] = stop_change_df['delay'].abs() > 2
+
         # 5.2.4 delay_cutoff_5min
-        stop_change_df['delay_cutoff_5min'] = stop_change_df[stop_change_df['delay'].abs() > 5]
+        # Assign 1 if absolute delay is greater than 5, else 0
+        stop_change_df['delay_cutoff_5min'] = stop_change_df['delay'].abs() > 5
+
 
         # 5.3 print info
         print(f"Date: {date}")
