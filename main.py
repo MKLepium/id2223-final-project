@@ -137,9 +137,14 @@ def transaction_capsule(date, schedule_df):
 
         
 def process_date(date, schedule_df, dev_list, cur):
+    # For whatever reason I get the dev_list as a list of tuples
     logging.debug(f"dev_list: {dev_list}")
+    modified_list = [item[0] for item in dev_list]
 
-    for dev in dev_list:
+    logging.debug(f"modified_list: {modified_list}")
+
+
+    for dev in modified_list:
         logging.debug(f"Processing dev: {dev}")
         
         # 0. get the data and sort it by time
