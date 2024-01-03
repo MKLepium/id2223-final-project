@@ -179,7 +179,7 @@ def process_date(date, schedule_df, dev_list, cur):
             row['stop'] = int(row['stop'])
             logging.debug(f"schedule_df['stop_id'].dtype, {schedule_df['stop_id'].dtype}")
             logging.debug(f"row['stop'], {type(row['stop'])}")
-            matching_schedule_rows = schedule_df[int(schedule_df['stop_id']) == int(row['stop'])]
+            matching_schedule_rows = schedule_df[schedule_df['stop_id'] == row['stop']]
             logging.debug(f"Found {len(matching_schedule_rows)} matching schedule rows")
 
 
