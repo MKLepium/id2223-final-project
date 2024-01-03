@@ -1,0 +1,70 @@
+route_id,agency_id,route_short_name,route_long_name,route_type
+AF.91,1,91,Egilsstaðir <-> Norðfjörður,3
+AF.92,1,92,Breiðdalsvík <-> Fáskrúðsfjörður,3
+AF.93,1,93,Seyðisfjörður <-> Egilsstaðir,3
+AF.94,1,94,Breiðdalsvík <-> Höfn,3
+AF.95,1,95,Egilsstaðir <-> Borgarfjörður,3
+AF.96,1,96,Norðfjörður <-> Fáskrúðsfjörður,3
+NO.56,1,56,Egilsstaðir <-> Akureyri,3
+NO.78,1,78,Siglufjörður <-> Akureyri,3
+NO.79,1,79,Húsavík <-> Akureyri,3
+RY.1,2,1,Hlemmur <-> Hfj. Skarðshlíð,3
+RY.3,2,3,Hlemmur <-> Mjódd,3
+RY.4,2,4,Hlemmur <-> Mjódd,3
+SA.1,3,1,Hlemmur <-> Hfj. Skarðshlíð,3
+SA.2,3,2,Hlemmur <-> Mjódd,3
+SA.3,3,3,Hlemmur <-> Mjódd,3
+SA.4,3,4,Hlemmur <-> Mjódd,3
+SA.5,3,5,BSÍ <-> Norðlingaholt,3
+SA.6,3,6,Hlemmur <-> Egilshöll,3
+SN.55,1,55,KEF – Airport <-> Reykjavík,3
+SN.87,1,87,Vogar <-> Vogaafleggari,3
+SN.89,1,89,Reykjanesbær <-> Sandgerði,3
+ST.1,1,1,Hlemmur <-> Hfj. Skarðshlíð,3
+ST.2,1,2,Hlemmur <-> Mjódd,3
+ST.3,1,3,Hlemmur <-> Mjódd,3
+ST.4,1,4,Hlemmur <-> Mjódd,3
+ST.5,1,5,BSÍ <-> Norðlingaholt,3
+ST.6,1,6,Hlemmur <-> Egilshöll,3
+ST.7,1,7,Egilshöll <-> Leirvogstunga,3
+ST.8,1,8,Nauthóll <-> Gamla Hringbraut,3
+ST.11,1,11,Mjódd <-> Seltjarnarnes,3
+ST.12,1,12,Skerjafjörður <-> Ártún,3
+ST.13,1,13,Sléttuvegur <-> Öldugrandi,3
+ST.14,1,14,Grandi <-> Verzló,3
+ST.15,1,15,Mosfellsbær <-> Vesturbær,3
+ST.16,1,16,Hlemmur <-> Hádegismóar,3
+ST.17,1,17,Hlemmur <-> Breiðholt,3
+ST.18,1,18,Spöngin <-> Hlemmur,3
+ST.19,1,19,Kaplarkriki <-> Ásvallalaug,3
+ST.21,1,21,Háholt <-> Mjódd,3
+ST.22,1,22,Ásgarður -> Urriðaholt -> Ásgarður,3
+ST.23,1,23,Ásgarður -> Álftanes -> Ásgarður,3
+ST.24,1,24,Spöngin <-> Garðabær,3
+ST.25,1,25,Spöngin B -> Gufunes -> Spöngin B,3
+ST.26,1,26,Ásvallalaug -> Hellnahraun -> Ásvallalaug,3
+ST.27,1,27,Háholt -> Laxnes -> Háholt,3
+ST.28,1,28,Hamraborg <-> Dalaþing,3
+ST.29,1,29,Háholt <-> Kjalarnes,3
+ST.31,1,31,Gufunesbær <-> Egilshöll,3
+ST.35,1,35,Hamraborg -> Engihjalli -> Hamraborg,3
+ST.36,1,36,Hamraborg <-> Kársnes,3
+ST.101,1,101,,3
+ST.103,1,103,Hlemmur B -> Breiðholt,3
+ST.104,1,104,Lækjartorg B -> Úlfarsárdalur,3
+ST.105,1,105,Lækjartorg B -> Norðlingaholt,3
+ST.106,1,106,Lækjartorg B -> Grafarvogur,3
+SU.51,1,51,Selfoss / Vík / Höfn <-> Reykjavík,3
+SU.52,1,52,Reykjavík <-> Landeyjahöfn,3
+SU.71,1,71,Þorlákshöfn <-> Hveragerði,3
+SU.72,1,72,Selfoss -> Flúðir -> Selfoss,3
+SU.73,1,73,Selfoss -> Grímsnes -> Selfoss,3
+VL.57,1,57,Akureyri <-> Reykjavík,3
+VL.58,1,58,Stykkishólmur <-> Borgarnes,3
+VL.59,1,59,Borgarnes <-> Hólmavík,3
+VL.61,1,61,Ísafjörður <-> Hólmavík,3
+VL.63,1,63,Varmalandsskóli <-> Borgarnes,3
+VL.64,1,64,Kleppjárnsreykir <-> Borgarnes,3
+VL.81,1,81,Borgarnes <-> Reykholt,3
+VL.82,1,82,Hellissandur <-> Stykkishólmur,3
+VL.84,1,84,Skagaströnd <-> Blönduós,3

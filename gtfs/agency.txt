@@ -1,0 +1,4 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url
+1,Strætó BS,http://straeto.is/,Atlantic/Reykjavik,is,(+354)5402700,https://www.straeto.is/verslun
+2,Reykjanesbær,http://straeto.is/,Atlantic/Reykjavik,is,(+354)5402700,http://straeto.is/verslun
+3,Akureyri,http://straeto.is/,Atlantic/Reykjavik,is,(+354)5402700,http://straeto.is/verslun
