@@ -174,10 +174,8 @@ def process_date(date, schedule_df, dev_list, cur):
         for index, row in stop_change_df.iterrows():
             logging.debug(f"Processing stop change row: {row}")
             
-            # cast the schedule_df['stop_id'] to int
-            schedule_df['stop_id'] = schedule_df['stop_id'].astype(int)
             # cast the row['stop'] to int if it is not an int
-            if not isinstance(row['stop'], int):
+            if not isinstance(row['stop'], int) and row['stop'].isdigit():
                 row['stop'] = int(row['stop'])
             
             logging.debug(f"schedule_df['stop_id'].dtype, {schedule_df['stop_id'].dtype}")
@@ -255,12 +253,13 @@ def process_date(date, schedule_df, dev_list, cur):
 if __name__ == '__main__':
     # read the schedule data
     schedule_df = read_data('gtfs/stop_times.txt')
+    schedule_df['stop_id'] = schedule_df['stop_id'].astype(int)
     logging.debug(f"Schedule df: {schedule_df.head()}")
     logging.debug(f"Schedule df info: {schedule_df.info()}")
     logging.debug(f"Schedule df length: {len(schedule_df)}")
-    schedule_df['arrival_time'] = schedule_df['arrival_time'].apply(custom_to_datetime).dt.time
-    transaction_capsule('2023-11-01', schedule_df)
-    print("Done")
+    #schedule_df['arrival_time'] = schedule_df['arrival_time'].apply(custom_to_datetime).dt.time
+    #transaction_capsule('2023-11-01', schedule_df)
+    #print("Done")
 
 
 
