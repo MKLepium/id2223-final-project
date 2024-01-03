@@ -276,11 +276,11 @@ if __name__ == '__main__':
                 continue
             elif month == '2023-12' and day > 31:
                 continue
-            
+
             date = f"{month}-{day:02d}"
             logging.info(f"Processing date: {date}")
             transaction_capsule(date, schedule_df)
-            print("Done")
+    logging.info("Done")
 
 
 
