@@ -257,9 +257,9 @@ if __name__ == '__main__':
     logging.debug(f"Schedule df: {schedule_df.head()}")
     logging.debug(f"Schedule df info: {schedule_df.info()}")
     logging.debug(f"Schedule df length: {len(schedule_df)}")
-    #schedule_df['arrival_time'] = schedule_df['arrival_time'].apply(custom_to_datetime).dt.time
-    #transaction_capsule('2023-11-01', schedule_df)
-    #print("Done")
+    schedule_df['arrival_time'] = schedule_df['arrival_time'].apply(custom_to_datetime).dt.time
+    transaction_capsule('2023-11-01', schedule_df)
+    print("Done")
 
 
 
