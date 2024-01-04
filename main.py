@@ -1,11 +1,9 @@
-# read the data from the csv file and create pandas dataframe
-# give me a function to read all the txt files in a directory and give me each file as a pandas dataframe
 import datetime
 import pandas as pd
 import psycopg2
 import logging
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 
 def read_data(file):
@@ -97,14 +95,27 @@ Column |            Type             | Collation | Nullable | Default
 
     return df
 
-def insert_delay_data(cur, date, dev, delay, delay_cutoff_1min, delay_cutoff_2min, delay_cutoff_5min):
+def insert_delay_data(cur, date, dev, delay, delay_cutoff_1min, delay_cutoff_2min, delay_cutoff_5min, fer):
     logging.debug(f"Inserting data for date: {date} and dev: {dev}")
     # only insert if the data does not exist
 
+    """
+CREATE TABLE bus_data_schema.delay_max_test_v2(
+    Date DATE NOT NULL,
+    Dev VARCHAR(255) NOT NULL,
+    Delay_no_cutoff NUMERIC,
+    Delay_cutoff_1min NUMERIC,
+    Delay_cutoff_2min NUMERIC,
+    Delay_cutoff_5min NUMERIC,
+    Fer VARCHAR(255) NOT NULL,
+    PRIMARY KEY (Date, Dev, Fer)
+);
+    """
+
     sql = """
-    INSERT INTO bus_data_schema.delay_max_test 
-    VALUES (%(date)s, %(dev)s, %(delay)s, %(delay_cutoff_1min)s, %(delay_cutoff_2min)s, %(delay_cutoff_5min)s)
-    ON CONFLICT (date, dev) 
+    INSERT INTO bus_data_schema.delay_max_test_v2 (Date, Dev, Delay_no_cutoff, Delay_cutoff_1min, Delay_cutoff_2min, Delay_cutoff_5min, Fer)
+    VALUES (%(date)s, %(dev)s, %(delay)s, %(delay_cutoff_1min)s, %(delay_cutoff_2min)s, %(delay_cutoff_5min)s, %(fer)s)
+    ON CONFLICT (date, dev, fer) 
     DO NOTHING
     """
 
@@ -114,7 +125,8 @@ def insert_delay_data(cur, date, dev, delay, delay_cutoff_1min, delay_cutoff_2mi
         'delay': delay, 
         'delay_cutoff_1min': delay_cutoff_1min, 
         'delay_cutoff_2min': delay_cutoff_2min, 
-        'delay_cutoff_5min': delay_cutoff_5min
+        'delay_cutoff_5min': delay_cutoff_5min,
+        'fer': fer
     }
     logging.debug(f"Executing sql: {sql} with params: {params}")
     cur.execute(sql, params)
@@ -165,6 +177,7 @@ def process_date(date, schedule_df, dev_list, cur):
 
         # 2. stop_change_df contains the timestamps and other data when the bus arrived at a new stop
         stop_change_df = bus_data_df[bus_data_df['stop_change'] & bus_data_df['stop'].notna()].copy()
+        logging.debug(f"Stop change df: {stop_change_df}")
         logging.debug(f"Found {len(stop_change_df)} stop changes")
         # 2.1 add the delay column
         stop_change_df['delay'] = None
@@ -179,78 +192,101 @@ def process_date(date, schedule_df, dev_list, cur):
         logging.debug(f"Stop change df: {stop_change_df.head()}")
         logging.debug(f"Stop change length: {len(stop_change_df)}")
 
-        for index, row in stop_change_df.iterrows():
-            logging.debug(f"Processing stop change row: {row}")
-            
-            # cast the row['stop'] to int if it is not an int
-            if not isinstance(row['stop'], int) and row['stop'].isdigit():
-                row['stop'] = int(row['stop'])
-            
-            logging.debug(f"schedule_df['stop_id'].dtype, {schedule_df['stop_id'].dtype}")
-            logging.debug(f"row['stop'], {type(row['stop'])}")
-            matching_schedule_rows = schedule_df[schedule_df['stop_id'] == row['stop']]
-            logging.debug(f"Found {len(matching_schedule_rows)} matching schedule rows")
+        # Get the unique fer values
+        unique_fer_values = stop_change_df['fer'].unique()
+        logging.debug(f"Unique fer values: {unique_fer_values}")
+
+        # Create a dictionary to hold the DataFrames
+        dfs = {}
 
 
-            # If there are no matching rows, continue to the next iteration
-            if matching_schedule_rows.empty:
-                logging.debug(f"No matching schedule rows found")
-                continue
+        # Loop through each unique value and create a DataFrame for each
 
-            # Get the scheduled arrival times
-            schedule_times = matching_schedule_rows['arrival_time'].tolist()
-            logging.debug(f"Schedule times: {schedule_times}")
+        for value in unique_fer_values:
+            # Directly create a filtered copy of stop_change_df for the current fer value
+            dfs[value] = stop_change_df[stop_change_df['fer'] == value].copy().reset_index(drop=True)
 
-            # Find the closest schedule time
-            closest_time = find_closest_schedule_time(row['time'], schedule_times)
-            logging.debug(f"Closest time: {closest_time}")
+        logging.debug(f"DataFrames: {dfs}")
 
-            # Calculate the delay
-            if closest_time:
-                delay = (row['time'] - closest_time).total_seconds() / 60
-                # if delay is negative, the bus arrived early so set delay to 0
-                if delay < 0:
-                    delay = 0
-                stop_change_df.at[index, 'delay'] = delay
-                logging.debug(f"Delay: {delay}")
-        #print(stop_change_df)
-        
+        for fer, df in dfs.items():
+            for index, row in df.iterrows():
+                logging.debug(f"Processing stop change row: {row}")
+                
+                # cast the row['stop'] to int if it is not an int
+                if not isinstance(row['stop'], int) and row['stop'].isdigit():
+                    row['stop'] = int(row['stop'])
+                
+                logging.debug(f"schedule_df['stop_id'].dtype, {schedule_df['stop_id'].dtype}")
+                logging.debug(f"row['stop'], {type(row['stop'])}")
+                matching_schedule_rows = schedule_df[schedule_df['stop_id'] == row['stop']]
+                logging.debug(f"Found {len(matching_schedule_rows)} matching schedule rows")
+
+
+                # If there are no matching rows, continue to the next iteration
+                if matching_schedule_rows.empty:
+                    logging.debug(f"No matching schedule rows found")
+                    continue
+
+                # Get the scheduled arrival times
+                schedule_times = matching_schedule_rows['arrival_time'].tolist()
+                #logging.debug(f"Schedule times: {schedule_times}")
+
+                # Find the closest schedule time
+                closest_time = find_closest_schedule_time(row['time'], schedule_times)
+                logging.debug(f"Closest time: {closest_time}")
+
+                # Calculate the delay
+                if closest_time:
+                    delay = (row['time'] - closest_time).total_seconds() / 60
+                    # if delay is negative, the bus arrived early so set delay to 0
+                    if delay < 0:
+                        delay = 0
+                    #stop_change_df.at[index, 'delay'] = delay
+                    dfs[fer].at[index, 'delay'] = delay
+                    logging.debug(f"Delay: {delay}")
+        logging.debug(dfs)
         # 5. calculate the total absolute delay
         # 5.1 remove the rows with no delay
         logging.debug(f"Found {len(stop_change_df)} stop changes before removing rows with no delay")
-        stop_change_df = stop_change_df[stop_change_df['delay'].notna()]
+        for fer, df in dfs.items():
+            logging.debug(f"Found {len(df)} stop changes before removing rows with no delay")
 
-        # 5.2 create a new row for delay_no_cutoff, delay_cutoff_1min, delay_cutoff_2min, delay_cutoff_5min
-        # 5.2.1 delay_no_cutoff
-        stop_change_df['delay_no_cutoff'] = stop_change_df['delay'].abs()
+            # Filter out rows with NaN in 'delay' and update the dfs dictionary directly
+            dfs[fer] = df[df['delay'].notna()]
+            logging.debug(f"Found {len(dfs[fer])} stop changes after removing rows with no delay")
 
-        # 5.2.2 delay_cutoff_1min
-        # Assign 1 if absolute delay is greater than 1, else 0
-        stop_change_df['delay_cutoff_1min'] = stop_change_df['delay'].abs() > 1
+            # Now, update df to point to the filtered DataFrame in dfs
+            df = dfs[fer]
 
-        # 5.2.3 delay_cutoff_2min
-        # Assign 1 if absolute delay is greater than 2, else 0
-        stop_change_df['delay_cutoff_2min'] = stop_change_df['delay'].abs() > 2
+            # Add new columns
+            df['delay_no_cutoff'] = df['delay'].abs()
+            df['delay_cutoff_1min'] = df['delay'].abs() > 1
+            df['delay_cutoff_2min'] = df['delay'].abs() > 2
+            df['delay_cutoff_5min'] = df['delay'].abs() > 5
 
-        # 5.2.4 delay_cutoff_5min
-        # Assign 1 if absolute delay is greater than 5, else 0
-        stop_change_df['delay_cutoff_5min'] = stop_change_df['delay'].abs() > 5
-
-
+            # Make sure to update the dictionary with the modified DataFrame
+            dfs[fer] = df
 
         # 5.3 print info
         logging.info(f"Date: {date}")
-        logging.info(f"Bus {dev} has a total delay of: {stop_change_df['delay_no_cutoff'].sum()} minutes")
-        logging.info(f"Bus {dev} has a total delay of: {stop_change_df['delay_cutoff_1min'].sum()} minutes with a cutoff of 1 minute")
-        logging.info(f"Bus {dev} has a total delay of: {stop_change_df['delay_cutoff_2min'].sum()} minutes with a cutoff of 2 minutes")
-        logging.info(f"Bus {dev} has a total delay of: {stop_change_df['delay_cutoff_5min'].sum()} minutes with a cutoff of 5 minutes")
+        logging.info(f"Bus {dev} has a total delay of: {dfs[fer]['delay'].sum()} minutes")
+        for fer, df in dfs.items():
+            logging.info(f"Fer: {fer}")
+            logging.info(f"Bus {dev} has a total delay of: {df['delay'].sum()} minutes")
+            logging.info(f"Bus {dev} has a total delay of: {df['delay'].abs().sum()} minutes")
+            logging.info(f"Bus {dev} has a total delay of: {df['delay_cutoff_1min'].sum()} minutes with a cutoff of 1 minute")
+            logging.info(f"Bus {dev} has a total delay of: {df['delay_cutoff_2min'].sum()} minutes with a cutoff of 2 minutes")
+            logging.info(f"Bus {dev} has a total delay of: {df['delay_cutoff_5min'].sum()} minutes with a cutoff of 5 minutes")
 
         # 5.4 insert the data into the database
-        insert_delay_data(cur, date, dev, 
-                            int(stop_change_df['delay_no_cutoff'].sum()), 
-                            int(stop_change_df['delay_cutoff_1min'].sum()),
-                            int(stop_change_df['delay_cutoff_2min'].sum()),
-                            int(stop_change_df['delay_cutoff_5min'].sum()))
+        for fer, df in dfs.items():
+            insert_delay_data(cur, date, dev, 
+                                int(df['delay_no_cutoff'].sum()), 
+                                int(df['delay_cutoff_1min'].sum()),
+                                int(df['delay_cutoff_2min'].sum()),
+                                int(df['delay_cutoff_5min'].sum()),
+                                fer)
+
         
 
 
@@ -265,6 +301,7 @@ if __name__ == '__main__':
     logging.debug(f"Schedule df info: {schedule_df.info()}")
     logging.debug(f"Schedule df length: {len(schedule_df)}")
     schedule_df['arrival_time'] = schedule_df['arrival_time'].apply(custom_to_datetime).dt.time
+
 
     months = ['2023-10', '2023-11', '2023-12']
     for month in months:
