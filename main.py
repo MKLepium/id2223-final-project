@@ -3,7 +3,7 @@ import pandas as pd
 import psycopg2
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 def read_data(file):
