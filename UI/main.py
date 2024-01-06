@@ -21,19 +21,20 @@ FER_PREFIX = "fer_"
 # download model
 project = hopsworks.login(project="ID2223_MKLepium")
 mr = project.get_model_registry()
-model_client = mr.get_model(MODELNAME, version=MODELVERSION)
-
+model = mr.get_model(MODELNAME, version=MODELVERSION)
+"""
 path = os.path.join(MODELNAME, MODEL_FILE)
 if not os.path.exists(path):
-    model_dir = model_client.download()
+    model_dir = model.download()
     # You never actually loaded saved the model, the download puts it in a temp dir
     model = joblib.load(model_dir + "/" + MODEL_FILE)
     model.save(path)
 
 model = joblib.load(path)
+"""
 print("Model downloaded")
 
-schema = model_client.model_schema
+schema = model.model_schema
 
 
 # transform schema to pandas dataframe
