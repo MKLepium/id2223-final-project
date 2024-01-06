@@ -35,13 +35,23 @@ def connect_to_db(server):
     return conn
 
 class DB:
-    def __init__(self) -> None:
+    def __init__(self, local: bool=False) -> None:
         self.server = None
         self.conn = None
+        self.local = local
 
     def init(self):
-        self.server = connect_to_sshtunnel()
-        self.conn = connect_to_db(self.server)
+        if self.local:
+            self.conn = psycopg2.connect(
+                database=os.getenv("DB_DATABASE"),
+                user=os.getenv("DB_USER"),
+                password=os.getenv("DB_PASSWORD"),
+                host="localhost",
+                port=5432
+            )
+        else:
+            self.server = connect_to_sshtunnel()
+            self.conn = connect_to_db(self.server)
 
     def close(self):
         if self.conn:
@@ -85,7 +95,8 @@ class DBManager():
         self.db = None
           
     def __enter__(self):
-        self.db = DB()
+        
+        self.db = DB(local=os.environ.get("LOCAL", False))
         self.db.init()
         return self.db
       
