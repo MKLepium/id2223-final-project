@@ -27,7 +27,7 @@ path = os.path.join(MODELNAME, MODEL_FILE)
 if not os.path.exists(path):
     model_dir = model_client.download()
     # You never actually loaded saved the model, the download puts it in a temp dir
-    model = joblib.load(model_dir)
+    model = joblib.load(model_dir + "/" + MODEL_FILE)
     model.save(path)
 
 model = joblib.load(path)
