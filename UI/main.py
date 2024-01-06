@@ -9,6 +9,7 @@ import joblib
 import pandas as pd
 from db import DBManager
 import os
+import shutil
 
 MODELNAME = "bus_model"
 MODELVERSION = 1
@@ -21,18 +22,21 @@ FER_PREFIX = "fer_"
 # download model
 project = hopsworks.login(project="ID2223_MKLepium")
 mr = project.get_model_registry()
-model = mr.get_model(MODELNAME, version=MODELVERSION)
+model_client = mr.get_model(MODELNAME, version=MODELVERSION)
 
-model_file = model.download()
-# this saves to tmp dir
+schema = model_client.model_schema
 
-# load model
-model = joblib.load(model_file + "/" + MODEL_FILE)
+path = os.path.join(MODELNAME, MODEL_FILE)
+if not os.path.exists(path):
+    model_dir = model_client.download()
+    # move from model_dir to path
+    os.rename(os.path.join(model_dir, MODEL_FILE), path)
+    shutil.rmtree(model_dir)
 
-
+model = joblib.load(path)
 print("Model downloaded")
 
-schema = model.model_schema
+
 
 
 # transform schema to pandas dataframe
@@ -162,6 +166,22 @@ def get_temp_for_tomorrow():
 def get_temp_for_date(date):
     pass
 
+
+import time
+total_fer_delay = 0
+def get_prediction_for_tomorrow_for_all_ferries():
+    global total_fer_delay
+    total_time = time.time()
+    for fer in ferries:
+        prediction = predict(fer)
+        print("Prediction for ferry", fer, "is", prediction)
+        total_fer_delay += prediction
+    print(f"Total time: {time.time() - total_time} seconds")
+
+    print("Total delay for all ferries is", total_fer_delay)
+    return "Total predicted delay for all ferries is " + str(total_fer_delay)
+
+
 demo = gr.Interface(
     fn=predict,
     inputs=[
@@ -170,6 +190,9 @@ demo = gr.Interface(
     ],
     outputs=gr.Textbox(label="Delay Information")
 )
+with demo:
+    gr.Button("New Function").click(get_prediction_for_tomorrow_for_all_ferries, inputs=None, outputs=gr.Textbox(label="Delay Information"))
+
 
 # Run the Gradio interface
 demo.launch(server_port=8090, server_name="0.0.0.0")
