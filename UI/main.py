@@ -27,7 +27,7 @@ model_file = model.download()
 # this saves to tmp dir
 
 # load model
-model = joblib.load(model_file)
+model = joblib.load(model_file + "/" + MODEL_FILE)
 
 
 print("Model downloaded")
