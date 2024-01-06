@@ -174,4 +174,4 @@ demo = gr.Interface(
 )
 
 # Run the Gradio interface
-demo.launch()
+demo.launch(server_name="0.0.0.0")
