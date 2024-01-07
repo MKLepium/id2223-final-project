@@ -178,7 +178,7 @@ def get_prediction_for_tomorrow_for_all_ferries():
         prediction = predict(fer)
         print("Prediction for ferry", fer, "is", prediction)
         total_fer_delay += prediction
-        delay[fer] = prediction
+        delay[fer] = [prediction] # wrapping it in a list to work for the dataframe
     print(f"Total time: {time.time() - total_time} seconds")
 
     print("Total delay for all ferries is", total_fer_delay)
