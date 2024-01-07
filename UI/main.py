@@ -172,14 +172,20 @@ total_fer_delay = 0
 def get_prediction_for_tomorrow_for_all_ferries():
     global total_fer_delay
     total_time = time.time()
+    delay = {}
+    delay['Total'] = None
     for fer in ferries:
         prediction = predict(fer)
         print("Prediction for ferry", fer, "is", prediction)
         total_fer_delay += prediction
+        delay[fer] = prediction
     print(f"Total time: {time.time() - total_time} seconds")
 
     print("Total delay for all ferries is", total_fer_delay)
-    return "Total predicted delay for all ferries is " + str(total_fer_delay)
+    
+    delay['Total'] = total_fer_delay
+
+    return pd.DataFrame.from_dict(delay, orient='index', columns=['Delay'])
 
 
 demo = gr.Interface(
@@ -191,7 +197,7 @@ demo = gr.Interface(
     outputs=gr.Textbox(label="Delay Information")
 )
 with demo:
-    gr.Button("New Function").click(get_prediction_for_tomorrow_for_all_ferries, inputs=None, outputs=gr.Textbox(label="Delay Information"))
+    gr.Button("Calculate total delay for all").click(get_prediction_for_tomorrow_for_all_ferries, inputs=None, outputs=gr.Dataframe())
 
 
 # Run the Gradio interface
