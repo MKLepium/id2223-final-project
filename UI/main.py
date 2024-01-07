@@ -172,20 +172,20 @@ total_fer_delay = 0
 def get_prediction_for_tomorrow_for_all_ferries():
     global total_fer_delay
     total_time = time.time()
-    delay = {}
-    delay['Total'] = None
+    delay = []
+    delay.insert(0, ['Total', total_fer_delay])
     for fer in ferries:
         prediction = predict(fer)
         print("Prediction for ferry", fer, "is", prediction)
         total_fer_delay += prediction
-        delay[fer] = [prediction] # wrapping it in a list to work for the dataframe
+        delay.append([fer, prediction])
     print(f"Total time: {time.time() - total_time} seconds")
 
     print("Total delay for all ferries is", total_fer_delay)
     
-    delay['Total'] = total_fer_delay
+    delay[0][1] = total_fer_delay
 
-    return pd.DataFrame(delay)
+    return pd.DataFrame(delay, columns=['Ferry', 'Delay'])
 
 
 demo = gr.Interface(
