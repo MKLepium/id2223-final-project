@@ -173,7 +173,7 @@ def get_prediction_for_tomorrow_for_all_ferries():
     global total_fer_delay
     total_time = time.time()
     delay = []
-    delay.insert(0, ['Total', total_fer_delay])
+    delay.insert(0, ['Total Delay', total_fer_delay])
     for fer in ferries:
         prediction = predict(fer)
         print("Prediction for ferry", fer, "is", prediction)
