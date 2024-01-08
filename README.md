@@ -79,4 +79,4 @@ This is the best solution we could come up with, given the time constraints.
 The final product is a web application that allows the user to select a bus line, and it predicts the delay for the upcoming day.
 You can also use a button to calculate the total delay of all bus lines for the upcoming day.
 
-The web application is hosted on heroku, and can be found [here](http://88.99.215.78:8090/).
+The web application is hosted on a private server, and can be found [here](http://88.99.215.78:8090/).
