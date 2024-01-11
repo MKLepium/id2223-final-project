@@ -80,3 +80,5 @@ The final product is a web application that allows the user to select a bus line
 You can also use a button to calculate the total delay of all bus lines for the upcoming day.
 
 The web application is hosted on a private server, and can be found [here](http://88.99.215.78:8090/).
+
+Thanks to [straeto.is](straeto.is) for providing the underlying bus data.
